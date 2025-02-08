@@ -76,7 +76,7 @@ Les rapports permettent d’analyser et d’améliorer l’authentification des 
 
 ### 3. Le concept de confiance 
 
-Une des question de ce projet de recherche est de comprendre sur quel principe de confiance, le protocole DMARC repose et qui entretien cette dernière.
+Une des questions de ce projet de recherche est de comprendre sur quel principe de confiance, le protocole DMARC repose et qui entretien cette dernière.
 
 Ainsi, à la lecture de la RFC on remarque que a confiance en DMARC vient de plusieurs sources :
 
