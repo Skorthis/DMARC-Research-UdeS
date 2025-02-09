@@ -128,3 +128,57 @@ Déploiement progressif
 
 Commencer avec `p=none` pour collecter des données.
 Passer à `p=quarantine` puis `p=reject` une fois sûr que la configuration est correcte.
+
+
+## DMARCBis 
+
+Une nouvelle version du protocole DMARC est en phase de développement, DMARCbis. Cette version n'a pas encore été officiellement publié. Selon les informations disponibles, la spécification est en cours de finalisation et devrait être publiée en tant que norme proposée en 2025. 
+
+### DMARCbis : Nouveautés, Changements et Raisons de la Nouvelle Version
+
+DMARCbis est la nouvelle version du protocole DMARC, conçue pour remplacer RFC 7489. Elle a été développée pour intégrer les retours d’expérience et corriger certaines limitations identifiées lors du déploiement massif de DMARC ces dernières années. 
+
+## Nouveautés et Changements Clés
+
+- **Restructuration et Clarification du Document**  
+  La spécification a été réorganisée et enrichie avec des exemples plus détaillés et des définitions plus claires. Cela facilite la compréhension et l’implémentation du protocole par les différents acteurs (propriétaires de domaines et récepteurs).
+
+- **Amélioration de la Détermination du Domaine Organisationnel**  
+  L’ancienne méthode basée sur la Public Suffix List (PSL) est remplacée par un algorithme de *DNS Tree Walk*. Cette approche permet :
+  - Une identification plus précise du domaine organisationnel.
+  - L’intégration de la notion de domaine public (Public Suffix Domain, PSD) grâce au tag `psd`.
+
+- **Modification des Tags de l’Enregistrement DMARC**  
+  Pour simplifier l’implémentation, certains tags ont été supprimés et de nouveaux ajoutés :
+  
+  - **Tags supprimés :** `pct`, `rf` et `ri`.
+  - **Tags ajoutés :**
+    - `np` : Permet de définir la politique applicable aux sous-domaines inexistants.
+    - `psd` : Indique si le domaine est considéré comme un domaine public (PSD).
+    - `t` : Remplace en partie le fonctionnement du tag `pct` en indiquant le mode test (pour ne pas appliquer strictement la politique).
+
+- **Évolution des Terminologies**  
+  Certains termes ont été clarifiés ou renommés pour mieux refléter leur rôle dans le processus DMARC, par exemple le terme *Report Receiver* est remplacé par *Report Consumer*.
+
+- **Meilleure Prise en Compte des Flux de Courriels Indirects**  
+  DMARCbis aborde plus explicitement les problèmes liés aux transferts de courriels et aux listes de diffusion, qui peuvent fausser l’alignement SPF/DKIM. Des recommandations sont fournies pour éviter des rejets inappropriés dans ces cas particuliers.
+
+## Pourquoi cette Nouvelle Version ?
+
+- **Retours d’Expérience et Leçons Apprises**  
+  Depuis 2015, le déploiement de DMARC a permis de constater certaines limites (par exemple, des erreurs de configuration fréquentes ou des difficultés liées aux flux de courriels indirects). DMARCbis vise à corriger ces insuffisances.
+
+- **Simplification et Robustesse de l’Implémentation**  
+  En clarifiant la spécification et en améliorant les mécanismes de découverte du domaine organisationnel, la nouvelle version rend l’implémentation de DMARC plus simple et plus fiable pour tous les acteurs.
+
+- **Passage vers une Norme Officielle**  
+  Alors que RFC 7489 avait un statut informatif, DMARCbis est destiné à devenir une norme officielle (Standards Track). Cela vise à uniformiser les implémentations et à encourager une adoption plus large du protocole.
+
+- **Adaptation aux Enjeux Actuels de Sécurité des Courriels**  
+  La mise à jour tient compte des évolutions de l’écosystème des courriels et des besoins actuels en matière de sécurité, notamment pour mieux gérer les cas complexes (transferts, listes de diffusion) et garantir une meilleure interopérabilité entre les systèmes.
+
+## Conclusion
+
+DMARCbis représente une évolution naturelle du protocole DMARC, apportant des améliorations significatives pour renforcer l’authentification et la sécurité des courriels. En clarifiant la spécification, en améliorant la détermination du domaine organisationnel et en simplifiant l’implémentation via de nouveaux tags, DMARCbis vise à rendre le protocole plus robuste et mieux adapté aux exigences actuelles de l’écosystème des courriels.
+
+
