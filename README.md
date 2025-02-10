@@ -214,7 +214,9 @@ Ce qui nous retourne *abrégé pour lisibilité* :
 Cette configuration semble correcte, la politique est bien sur `-all` ce qui bloque tout serveur non listé dans la politique. 
 
 
+On peut vérifier la signature DKIM en regardant une en-tête de courriel : 
 
+```
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=usherbrooke.ca;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
@@ -229,10 +231,15 @@ c= Method:          relaxed/relaxed
 d= Domain:          usherbrooke.ca
 s= Selector:        selector1
 q= Protocol:        
+```
+
+Concernant le point de confiance et le certificat utilisé, on utilise l'outil openssl pour se connecter au domaine et récupérer les informations. 
+
+`openssl s_client -connect usherbrooke.ca:443 -servername usherbrooke.ca | openssl x509 -noout -issuer -subject`
 
 
-openssl s_client -connect usherbrooke.ca:443 -servername usherbrooke.ca | openssl x509 -noout -issuer -subject
-
+Ce qui nous donne : 
+```
 Connecting to 132.210.7.145
 depth=2 C=US, ST=New Jersey, L=Jersey City, O=The USERTRUST Network, CN=USERTrust RSA Certification Authority
 verify return:1
@@ -242,11 +249,16 @@ depth=0 serialNumber=977000, jurisdictionC=CA, jurisdictionST=Quebec, businessCa
 verify return:1
 issuer=C=GB, ST=Greater Manchester, L=Salford, O=Sectigo Limited, CN=Sectigo RSA Extended Validation Secure Server CA
 subject=serialNumber=977000, jurisdictionC=CA, jurisdictionST=Quebec, businessCategory=Government Entity, C=CA, ST=Québec, O=Université de Sherbrooke, CN=www.usherbrooke.ca
+```
+
+Et enfin, la dernière partie est l'enregistrement DNS : 
 
 
+`whois usherbrooke.ca `
 
+Nous retrouvons beaucoup d'informations : 
 
-whois usherbrooke.ca  
+```
 Domain Name: usherbrooke.ca
 Registry Domain ID: D52743-CIRA
 Registrar WHOIS Server: whois.ca.fury.ca
@@ -298,4 +310,4 @@ Tech Phone Ext:
 Tech Fax: +1.8198218045
 Tech Fax Ext:
 Tech Email: dns-contact-tech@listes.usherbrooke.ca
-
+```
