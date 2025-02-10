@@ -182,3 +182,120 @@ DMARCbis est la nouvelle version du protocole DMARC, conçue pour remplacer RFC�
 DMARCbis représente une évolution naturelle du protocole DMARC, apportant des améliorations significatives pour renforcer l’authentification et la sécurité des courriels. En clarifiant la spécification, en améliorant la détermination du domaine organisationnel et en simplifiant l’implémentation via de nouveaux tags, DMARCbis vise à rendre le protocole plus robuste et mieux adapté aux exigences actuelles de l’écosystème des courriels.
 
 
+# Pratique 
+
+## Vérification du bon fonctionnement de la politique DMARC sur le domaine de l'université
+
+On commence par vérifier la bonne mise en place d'une politique DMARC dans l'enregistrement TXT du nom de domaine `usherbrooke.ca`.
+
+*La commande a été effectuée le 10/02/2025 à 7:35 AM*
+
+
+`dig TXT _dmarc.usherbrooke.ca +short` 
+
+Cette commande utilise l'outil dig afin de retourner seulement la partie DMARC qui se situe sous ` _dmarc.nomDeDomaine` de l'enregistrement TXT. 
+
+En voici la sortie : 
+
+` "v=DMARC1; p=none; rua=mailto:dmarc_agg@vali.email, mailto:ms365-dmarc-rua@usherbrooke.ca; ruf=mailto:ms365-dmarc-ruf@usherbrooke.ca;" `
+
+
+Ainsi, on remarque que l'université utilise DMARC, a bien configuré des courriels pour l'envoi des rapports, cependant, la politique est configurée sur `p=none`. Il n'y a donc pas de vérification DMARC qui s'effectue. 
+
+
+Sachant que DMARC repose sur SPF et DKIM. Il faut aussi vérifier leur présence et leur bon fonctionnement.
+
+`dig TXT usherbrooke.ca +short `
+
+Ce qui nous retourne *abrégé pour lisibilité* :
+
+`"v=spf1 include:spf.protection.outlook.com ip4:132.210.0.0/16 a:b.spf.service-now.com a:c.spf.service-now.com a:d.spf.service-now.com include:_spf2.usherbrooke.ca -all"`
+
+Cette configuration semble correcte, la politique est bien sur `-all` ce qui bloque tout serveur non listé dans la politique. 
+
+
+
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=usherbrooke.ca;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=femt5K3LUCAMw7vEjTI+xYAxdBNS8+6Ogcr3BQkqzHo=;
+ b=SUu7vo0CM6Y90IJNadRl2UJzcSYpVYSHXLQK+L8kqtcTYvsZ7Y8CMIZRkfMVNo3X4dT3tpY+eI7cbyD2jaBXzbi5NOh92ME48p3oIeEIMq4lsboiOlvnCyp0D6qRWR69waI8Y/QlwO4cBqwu4/IubhisbZe1HIHZIAh4OIGva6Bja+9Guq72zn2em2kLig4nUgI5DsHNjq4ciWjUybOwt5aF5SDlPs/ZiULBrzn48KfKfahMbLrNsLsTdWU5KKFOlg+3gDILsjSvtMWEwPBQPnekYauZx4tuguy7z+YbN92Y+NDx3/IrIr4I8xgn+2K2WJahZ4L+PLwtkTwtweTxmA==
+
+
+Signature Information:
+v= Version:         1
+a= Algorithm:       rsa-sha256
+c= Method:          relaxed/relaxed
+d= Domain:          usherbrooke.ca
+s= Selector:        selector1
+q= Protocol:        
+
+
+openssl s_client -connect usherbrooke.ca:443 -servername usherbrooke.ca | openssl x509 -noout -issuer -subject
+
+Connecting to 132.210.7.145
+depth=2 C=US, ST=New Jersey, L=Jersey City, O=The USERTRUST Network, CN=USERTrust RSA Certification Authority
+verify return:1
+depth=1 C=GB, ST=Greater Manchester, L=Salford, O=Sectigo Limited, CN=Sectigo RSA Extended Validation Secure Server CA
+verify return:1
+depth=0 serialNumber=977000, jurisdictionC=CA, jurisdictionST=Quebec, businessCategory=Government Entity, C=CA, ST=Québec, O=Université de Sherbrooke, CN=www.usherbrooke.ca
+verify return:1
+issuer=C=GB, ST=Greater Manchester, L=Salford, O=Sectigo Limited, CN=Sectigo RSA Extended Validation Secure Server CA
+subject=serialNumber=977000, jurisdictionC=CA, jurisdictionST=Quebec, businessCategory=Government Entity, C=CA, ST=Québec, O=Université de Sherbrooke, CN=www.usherbrooke.ca
+
+
+
+
+whois usherbrooke.ca  
+Domain Name: usherbrooke.ca
+Registry Domain ID: D52743-CIRA
+Registrar WHOIS Server: whois.ca.fury.ca
+Registrar URL: www.webdomaine.ca
+Updated Date: 2021-11-18T19:11:53Z
+Creation Date: 2000-11-20T18:14:21Z
+Registry Expiry Date: 2029-12-01T05:00:00Z
+Registrar: A.R.C. Informatique Inc.
+Registrar IANA ID: not applicable
+Registrar Abuse Contact Email: mona@arcinfo.qc.ca
+Registrar Abuse Contact Phone: +1.4185459224
+Domain Status: clientTransferProhibited https://icann.org/epp#clientTransferProhibited
+Registry Registrant ID: 347340-CIRA
+Registrant Name: Claude Poulin
+Registrant Organization: Universite de Sherbrooke
+Registrant Street: 2500  boulevard Universite, Service des technologies de l'information
+Registrant City: Sherbrooke
+Registrant State/Province: QC
+Registrant Postal Code: J1K2R1
+Registrant Country: CA
+Registrant Phone: +1.8198218000
+Registrant Phone Ext:
+Registrant Fax: +1.8198218045
+Registrant Fax Ext:
+Registrant Email: dns-contact-adm@listes.usherbrooke.ca
+Registry Admin ID: 101800458-CIRA
+Admin Name: Claude Poulin
+Admin Organization: Universite de Sherbrooke
+Admin Street: 2500 boulevard Universite, Service des technologies de l'information
+Admin City: Sherbrooke
+Admin State/Province: QC
+Admin Postal Code: J1K2R1
+Admin Country: CA
+Admin Phone: +1.8198218000
+Admin Phone Ext:
+Admin Fax: +1.8198218045
+Admin Fax Ext:
+Admin Email: dns-contact-adm@listes.usherbrooke.ca
+Registry Tech ID: 101800739-CIRA
+Tech Name: Steeve Gagnon
+Tech Organization: Universite de Sherbrooke
+Tech Street: 2500 boulevard Universite, Service des technologies de l'information
+Tech City: Sherbrooke
+Tech State/Province: QC
+Tech Postal Code: J1K2R1
+Tech Country: CA
+Tech Phone: +1.8198218000
+Tech Phone Ext:
+Tech Fax: +1.8198218045
+Tech Fax Ext:
+Tech Email: dns-contact-tech@listes.usherbrooke.ca
+
