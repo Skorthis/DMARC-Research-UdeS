@@ -311,3 +311,43 @@ Tech Fax: +1.8198218045
 Tech Fax Ext:
 Tech Email: dns-contact-tech@listes.usherbrooke.ca
 ```
+
+
+Réception d'un courriel, les différentes étapes et relations entre les protocoles: 
+
+```
+├── 1. Connexion SMTP et réception par le serveur (MTA)
+│   ├── a. Établissement de la connexion (handshake SMTP)
+│   ├── b. Négociation de la sécurité (STARTTLS/TLS)
+│   │      └── → Vérification du certificat SSL/TLS du serveur expéditeur
+│   └── c. Transmission du courriel (DATA)
+│
+├── 2. Traitement initial par le serveur de réception (MTA/MDA)
+│   ├── a. Extraction de l'adresse d'enveloppe (MAIL FROM)
+│   │      └── → Vérification SPF :
+│   │             • Le serveur de réception interroge le DNS du domaine MAIL FROM
+│   │             • Vérifie si l'IP du serveur expéditeur est autorisée (v=spf1 …)
+│   │             • Retourne un résultat : pass, softfail, ou fail
+│   ├── b. Extraction de l'en-tête "From" (RFC5322.From)
+│   └── c. Recherche d'une signature DKIM dans les en-têtes
+│          └── Vérification DKIM :
+│                • Le serveur récupère la clé publique via DNS (sélecteur._domainkey.domaine)
+│                • Vérifie que la signature correspond au contenu et n'a pas été altérée
+│                • Retourne pass ou fail
+│
+├── 3. Application de DMARC
+│   ├── a. Utilisation de l'adresse visible dans "From" comme domaine principal
+│   ├── b. Vérification d’alignement :
+│   │      • Comparaison entre l'adresse du champ From et :
+│   │             - Le domaine validé par SPF
+│   │             - Le domaine utilisé dans la signature DKIM
+│   ├── c. Détermination du résultat DMARC :
+│   │      • Si au moins SPF ou DKIM réussit ET sont alignés avec From → DMARC pass
+│   │      • Sinon, en fonction de la politique publiée (p=none, quarantine, reject) → action recommandée
+│   └── d. Génération de rapports (agrégés et/ou de défaillance) envoyés au propriétaire du domaine
+│
+└── 4. Autres vérifications et filtrages
+    ├── a. Analyse du contenu (anti-spam, anti-phishing)
+    ├── b. Vérification de la réputation de l'IP expéditrice
+    └── c. Application de politiques locales supplémentaires
+```
