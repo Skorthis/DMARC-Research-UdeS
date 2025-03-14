@@ -351,3 +351,8 @@ Réception d'un courriel, les différentes étapes et relations entre les protoc
     ├── b. Vérification de la réputation de l'IP expéditrice
     └── c. Application de politiques locales supplémentaires
 ```
+
+
+Afin d'avoir une représentation visuelle, nous pouvons nous aider de ce schéma créer pour l'occasion avec un résumé des inofrmations que nous venons de voir : 
+
+![Schema des différentes étapes de sécurité lors de la réception d'un courriel](/img/FlowChart_Email_Inbox.svg)
